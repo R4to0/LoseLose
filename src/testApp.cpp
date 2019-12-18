@@ -1,5 +1,6 @@
 #include "testApp.h"
 #include "zg_of_util.h"
+#include "globals.h"
 
 testApp::~testApp()
 {
@@ -41,7 +42,7 @@ void testApp::setup()
 	
 	homeDirectory = getHomeDir();
 	
-	playerName = homeDirectory.substr(homeDirectory.rfind("/")+1,  homeDirectory.size()-homeDirectory.rfind("/")-1);
+	playerName = homeDirectory.substr(homeDirectory.rfind(g_Slash)+1,  homeDirectory.size()-homeDirectory.rfind(g_Slash)-1);
 
 	if(LIVE) // -R4to0 (18 December 2019)
 		cout << "WARNING: RUNNING IN DESTRUCTIVE MODE!" << endl;
@@ -197,7 +198,7 @@ void testApp::draw()
 		font->drawString("press any key to begin",ofGetWidth()/2-font->stringWidth("press any key to begin")/2,ofGetHeight()/2-8);
 		smallFont->drawString("\n\na game of consequences//", 16, 24);
 		ofSetColor(150,150,200);// + 6 \n's for 800 height
-		smallFont->drawString("\n\n\n\nby zach gage // stfj.net // 2009\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmade with openFrameworks//\naudio from gratisvibes.com//\nEnemy appearance code made with david wicks in 2007//", 16, 24);
+		smallFont->drawString("\n\n\n\nby zach gage // stfj.net // 2009\n\nPC port by Rafael \"R4to0\" Alves // hldm-br.net // 2019\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nmade with openFrameworks//\naudio from gratisvibes.com//\nEnemy appearance code made with david wicks in 2007//", 16, 24);
 		ofSetColor(255,255,255);
 	}
 	
@@ -419,7 +420,7 @@ void testApp::newEnemy()
 string testApp::getNextFile()
 {
 	int curIndex = dirIndex[dirIndex.size()-1];
-	if(! gameWon)
+	if(!gameWon)
 	{
 		if( curIndex < dirSize ) // if we are still within the directory
 		{
@@ -469,20 +470,26 @@ string testApp::getHomeDir()
 
 	dir = path;
 
-	int homeDirPos = getNumberedPositionOfChar("/", 3, &dir);
-	dir = dir.substr(0,homeDirPos);
+	//int homeDirPos = getNumberedPositionOfChar(g_Slash, 3, &dir);
+	//dir = dir.substr(0,homeDirPos);
 
-	dirIndex.push_back(0);
+	//dirIndex.push_back(0);
 
-	dirSize = DIR->listDir(dir);
+	//dirSize = DIR->listDir(dir);
 
 #elif defined(_WIN32)
 	dir.append(getenv("HOMEDRIVE"));
 	dir.append(getenv("HOMEPATH"));
-	std::replace(dir.begin(), dir.end(), '\\', '/'); // replace all backslashes
+	dir.append(g_Slash);
 #elif defined(__linux__)
 	dir.append(getenv("HOME"));
-#endif	
+	dir.append(g_Slash);
+#endif
+
+	int homeDirPos = getNumberedPositionOfChar(g_Slash, 3, &dir);
+	dir = dir.substr(0, homeDirPos);
+	dirIndex.push_back(0);
+	dirSize = DIR->listDir(dir);
 	
 	return dir;
 }
@@ -532,7 +539,7 @@ void testApp::prevDirectory()
 	
 	//cout<<homeDirectory<<endl;
 	
-	homeDirectory = homeDirectory.substr(0, homeDirectory.rfind("/"));
+	homeDirectory = homeDirectory.substr(0, homeDirectory.rfind(g_Slash));
 	dirSize = DIR->listDir(homeDirectory);
 	
 	cout<<"prevDir: "<<homeDirectory<<endl;
@@ -592,8 +599,8 @@ void testApp::deleteFile(string path)
 	
 	//check to remove directory
 	
-	int numberOfSubFolders = getNumOccurance("/", path);
-	string subDirectory = path.substr(0, getNumberedPositionOfChar("/", numberOfSubFolders, &path));
+	int numberOfSubFolders = getNumOccurance(g_Slash, path);
+	string subDirectory = path.substr(0, getNumberedPositionOfChar(g_Slash, numberOfSubFolders, &path));
 	
 	if(delDir.listDir(subDirectory)==0)
 	{
@@ -649,15 +656,15 @@ void testApp::keyPressed(int key)
 {
 	if(gamestate==GAME_STATE_PLAYING)
 	{
-		if(key==357)
+		if(key == OF_KEY_UP || key == 'w')
 			mvUp = true;
-		else if(key==358)
+		else if(key == OF_KEY_RIGHT || key == 'd')
 			mvRt = true;
-		else if(key==359)
+		else if(key == OF_KEY_DOWN || key == 's')
 			mvDn = true;
-		else if(key==356)
+		else if(key == OF_KEY_LEFT || key == 'a')
 			mvLf = true;
-		else if(key==32)
+		else if(key == 32) // space -R4to0
 		{
 			bulletTimer=0;
 			shoot = true;
@@ -677,13 +684,13 @@ void testApp::keyReleased(int key)
 {
 	if(gamestate==GAME_STATE_PLAYING)
 	{
-		if(key==357)
+		if(key == OF_KEY_UP || key == 'w')
 			mvUp = false;
-		else if(key==358)
+		else if(key == OF_KEY_RIGHT || key == 'd')
 			mvRt = false;
-		else if(key==359)
+		else if(key == OF_KEY_DOWN || key == 's')
 			mvDn = false;
-		else if(key==356)
+		else if(key == OF_KEY_LEFT || key == 'a')
 			mvLf = false;
 		else if(key==32)
 			shoot = false;

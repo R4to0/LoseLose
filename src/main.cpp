@@ -1,6 +1,7 @@
 #include "ofMain.h"
 #include "testApp.h"
 //#include "ofAppGlutWindow.h" // Deprecated -R4to0 (18 December 2019)
+#include "globals.h"
 
 //========================================================================
 int main( ){

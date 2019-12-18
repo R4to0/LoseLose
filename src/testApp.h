@@ -95,7 +95,10 @@ class testApp : public ofBaseApp{
 	
 		string homeDirectory;
 		string playerName;
-	
+
+		// -R4to0 (18 December 2019)
+		string slash;
+
 		ofxHttpUtils web;
 	
 		bool LIVE;

@@ -8,6 +8,8 @@
  */
 
 #include "ll_enemy.h"
+#include "globals.h"
+
 
 ll_enemy::ll_enemy(string _path, float speedPlus)
 {
@@ -15,9 +17,9 @@ ll_enemy::ll_enemy(string _path, float speedPlus)
 	dead = false;
 	rush = false;
 	
-	name = path.substr(path.rfind("/")+1,  path.size()-path.rfind("/")-1);
+	name = path.substr(path.rfind(g_Slash)+1,  path.size()-path.rfind(g_Slash)-1);
 	
-	
+	cout << "New enemy with file: " << _path << endl; // debug -R4to0
 	
 	//color, size, and speed values based on file type
 	if(name.size()>3)
@@ -49,7 +51,7 @@ ll_enemy::ll_enemy(string _path, float speedPlus)
 	
 	//random poses per name before file type
 	int r=1;
-	for(int i=0;i<name.size()-4;i++)
+	for(int i=0;i<name.size()/*-4*/;i++)
 	{
 		r*=name[i];
 	}
@@ -220,20 +222,20 @@ void ll_enemy::draw()
 	{
 		for(int i=0;i<blocks.size();i++)
 		{
-			ofRect(pos.x+blocks[i].x,pos.y+blocks[i].y,blockSize,blockSize);
-			ofRect(pos.x-blocks[i].x-blockSize,pos.y+blocks[i].y,blockSize,blockSize);
+			ofDrawRectangle(pos.x+blocks[i].x,pos.y+blocks[i].y,blockSize,blockSize);
+			ofDrawRectangle(pos.x-blocks[i].x-blockSize,pos.y+blocks[i].y,blockSize,blockSize);
 		}
 	}
 	else {
 		for(int i=0;i<blocks2.size();i++)
 		{
-			ofRect(pos.x+blocks2[i].x,pos.y+blocks2[i].y,blockSize,blockSize);
-			ofRect(pos.x-blocks2[i].x-blockSize,pos.y+blocks2[i].y,blockSize,blockSize);
+			ofDrawRectangle(pos.x+blocks2[i].x,pos.y+blocks2[i].y,blockSize,blockSize);
+			ofDrawRectangle(pos.x-blocks2[i].x-blockSize,pos.y+blocks2[i].y,blockSize,blockSize);
 		}
 	}
 	
 	ofSetColor(255,0,0);
-	ofRect(pos.x-xSize*blockSize/2, pos.y-5, hp*4, 2);
+	ofDrawRectangle(pos.x-xSize*blockSize/2, pos.y-5, hp*4, 2);
 
 //	ofRect(pos.x,pos.y,xSize,ySize);
 }
