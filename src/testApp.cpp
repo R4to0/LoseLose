@@ -36,12 +36,18 @@ void testApp::setup()
 	gameWon = false;
 	gameLost = false;
 	
-	DIR = new ofxDirList();
+    //DIR = new ofxDirList();
+	DIR = new ofDirectory(); // -R4to0 (18 December 2019)
 	
 	homeDirectory = getHomeDir();
 	
 	playerName = homeDirectory.substr(homeDirectory.rfind("/")+1,  homeDirectory.size()-homeDirectory.rfind("/")-1);
-		
+
+	if(LIVE) // -R4to0 (18 December 2019)
+		cout << "WARNING: RUNNING IN DESTRUCTIVE MODE!" << endl;
+	else
+		cout << "Running in NON-DESTRUCTIVE mode." << endl;
+
 	cout<<"Home Directory: "<<homeDirectory<<endl;
 	cout<<"Player Name: "<<playerName<<endl;
 	
@@ -145,15 +151,19 @@ void testApp::draw()
 	
 	
 	stars[0].draw(0,starPos[0]);
-	stars[0].draw(0,starPos[0]-stars[0].height);
+	//stars[0].draw(0,starPos[0]-stars[0].height);
+	stars[0].draw(0,starPos[0]-stars[0].getHeight()); // -R4to0 (18 December 2019)
 	starPos[0]+=0.5;
-	if(starPos[0]==stars[0].height)
+	//if(starPos[0]==stars[0].height)
+	if(starPos[0]==stars[0].getHeight()) // -R4to0 (18 December 2019)
 		starPos[0]=0;
 	
 	stars[1].draw(0,starPos[1]);
-	stars[1].draw(0,starPos[1]-stars[1].height);
+	//stars[1].draw(0,starPos[1]-stars[1].height);
+	stars[1].draw(0,starPos[1]-stars[1].getHeight()); // -R4to0 (18 December 2019)
 	starPos[1]++;
-	if(starPos[1]==stars[1].height)
+	//if(starPos[1]==stars[1].height)
+	if(starPos[1]==stars[1].getHeight()) // -R4to0 (18 December 2019)
 		starPos[1]=0;
 	
 	
@@ -445,7 +455,9 @@ string testApp::getNextFile()
 string testApp::getHomeDir()
 {
 	string dir;
-	
+
+// -R4to0 (18 December 2019)
+#if defined (__APPLE__)
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
 	CFURLRef resourcesURL = CFBundleCopyBundleURL(mainBundle);
 	CFStringRef str = CFURLCopyFileSystemPath( resourcesURL, kCFURLPOSIXPathStyle );
@@ -454,16 +466,23 @@ string testApp::getHomeDir()
 	
 	CFStringGetCString( str, path, FILENAME_MAX, kCFStringEncodingASCII );
 	CFRelease(str);
-	
+
 	dir = path;
-	
+
 	int homeDirPos = getNumberedPositionOfChar("/", 3, &dir);
 	dir = dir.substr(0,homeDirPos);
-	
+
 	dirIndex.push_back(0);
-	
+
 	dirSize = DIR->listDir(dir);
-	
+
+#elif defined(_WIN32)
+	dir.append(getenv("HOMEDRIVE"));
+	dir.append(getenv("HOMEPATH"));
+	std::replace(dir.begin(), dir.end(), '\\', '/'); // replace all backslashes
+#elif defined(__linux__)
+	dir.append(getenv("HOME"));
+#endif	
 	
 	return dir;
 }
@@ -508,7 +527,8 @@ bool testApp::isDirectory(string path)
 void testApp::prevDirectory()
 {
 	delete DIR;
-	DIR = new ofxDirList();
+    //DIR = new ofxDirList();
+	DIR = new ofDirectory(); // -R4to0 (18 December 2019)
 	
 	//cout<<homeDirectory<<endl;
 	
@@ -532,7 +552,8 @@ void testApp::prevDirectory()
 void testApp::nextDirectory(string path)
 {
 	delete DIR;
-	DIR = new ofxDirList();
+    //DIR = new ofxDirList();
+	DIR = new ofDirectory(); // -R4to0 (18 December 2019)
 	dirSize = DIR->listDir(path);
 	
 	if(dirSize != 0)
@@ -554,7 +575,11 @@ void testApp::deleteFile(string path)
 
 	string dangerous;
 	
+#if defined (_WIN32) // -R4to0 (18 December 2019)
+	dangerous = "DEL /F /S /Q \"";
+#else
 	dangerous = "rm -r \"";
+#endif
 	dangerous += path;
 	dangerous += "\"";	
 	
@@ -572,7 +597,12 @@ void testApp::deleteFile(string path)
 	
 	if(delDir.listDir(subDirectory)==0)
 	{
+#if defined (_WIN32) // -R4to0 (18 December 2019)
+		dangerous = "RD /S /Q \"";
+#else
 		dangerous = "rm -r \"";
+
+#endif
 		dangerous+=subDirectory;
 		dangerous += "\"";
 		
@@ -587,7 +617,8 @@ void testApp::deleteFile(string path)
 void testApp::deleteSelf()
 {
 	string dir;
-	
+
+#if defined (__APPLE__) // -R4to0 (18 December 2019)
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
 	CFURLRef resourcesURL = CFBundleCopyBundleURL(mainBundle);
 	CFStringRef str = CFURLCopyFileSystemPath( resourcesURL, kCFURLPOSIXPathStyle );
@@ -596,7 +627,7 @@ void testApp::deleteSelf()
 	
 	CFStringGetCString( str, path, FILENAME_MAX, kCFStringEncodingASCII );
 	CFRelease(str);
-	
+
 	dir = path;
 	
 	string dangerous;
@@ -609,6 +640,7 @@ void testApp::deleteSelf()
 	
 	if(LIVE)
 		loadCmd = system(dangerous.c_str());
+#endif
 	
 }
 

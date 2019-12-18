@@ -10,7 +10,8 @@
 
 #include "ofMain.h"
 
-#include "ofxThread.h"
+//#include "ofxThread.h"
+#include "ofThread.h" // -R4to0 (18 December 2019)
 
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/Net/HTTPRequest.h"
@@ -26,7 +27,8 @@
 #include <iostream>
 //#include <queue.h>
 #include <vector>
-#include <istream.h>
+//#include <istream.h>
+#include <istream> // -R4to0 (18 December 2019)
 
 using Poco::Net::HTTPClientSession;
 using Poco::Net::HTTPRequest;
@@ -70,7 +72,8 @@ struct ofxHttpResponse{
 	string url;
 };
 
-class ofxHttpUtils : public ofxThread{
+//class ofxHttpUtils : public ofxThread{
+class ofxHttpUtils : public ofThread{ // -R4to0 (18 December 2019)
 
 	public:
 

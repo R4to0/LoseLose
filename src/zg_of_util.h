@@ -109,7 +109,8 @@ void fileToStringVector(string file, vector<string>* strings)
 	ifstream fin;
 	fin.open( ofToDataPath(file).c_str() );
 	
-	while(fin!=NULL)
+	//while(fin != NULL)
+	while(!fin.fail()) // -R4to0 (18 December 2019)
 	{
 		string str;
 		getline(fin, str);

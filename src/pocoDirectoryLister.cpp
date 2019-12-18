@@ -1,4 +1,5 @@
 #include "pocoDirectoryLister.h"
+#include <Poco/Exception.h> // -R4to0 (18 December 2019)
 
 ofxPocoDirectoryLister::ofxPocoDirectoryLister()
 {

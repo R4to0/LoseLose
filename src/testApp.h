@@ -3,7 +3,7 @@
 
 
 #include "ofMain.h"
-#include "ofxDirList.h"
+//#include "ofxDirList.h" // deprecated -R4to0 (18 December 2019)
 #include "pocoDirectoryLister.h"
 #include "particle.h"
 #include "ll_enemy.h"
@@ -70,9 +70,11 @@ class testApp : public ofBaseApp{
 		void nextDirectory(string path);
 		void newEnemy();
 	
-		ofxDirList * DIR;
+		//ofxDirList * DIR;
+		ofDirectory * DIR; // -R4to0 (18 December 2019)
 	
-		ofxDirList delDir;
+		//ofxDirList delDir;
+		ofDirectory delDir;  // -R4to0 (18 December 2019)
 		int dirSize;
 	
 		ofxPocoDirectoryLister dirList;

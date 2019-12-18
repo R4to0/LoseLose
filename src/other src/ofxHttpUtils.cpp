@@ -33,7 +33,8 @@ void ofxHttpUtils::addForm(ofxHttpForm form){
 void ofxHttpUtils::start() {
      if (isThreadRunning() == false){
         if(verbose) printf("starting http thread\n");
-        startThread(true, verbose);
+        //startThread(true, verbose);
+        startThread(true); // R4to0
     }
 }
 // ----------------------------------------------------------------------
