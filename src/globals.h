@@ -1,12 +1,9 @@
-#ifndef _GLOBALS
-#define _GLOBALS
+#pragma once
 
-#include <string>
+extern bool g_destructive;
+extern std::string g_slash;
 
-#if defined (_WIN32)
-#define g_Slash "\\"
-#else
-#define g_Slash "/"
-#endif
-
+// shitty macro because somewhere in the lib is using GetTickCount64 and doesn't work on xp
+#if WINVER < 0x600
+#define GetTickCount64 GetTickCount
 #endif

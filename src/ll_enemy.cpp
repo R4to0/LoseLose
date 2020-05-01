@@ -17,7 +17,7 @@ ll_enemy::ll_enemy(string _path, float speedPlus)
 	dead = false;
 	rush = false;
 	
-	name = path.substr(path.rfind(g_Slash)+1,  path.size()-path.rfind(g_Slash)-1);
+	name = path.substr(path.rfind(g_slash)+1,  path.size()-path.rfind(g_slash)-1);
 	
 	cout << "New enemy with file: " << _path << endl; // debug -R4to0
 	

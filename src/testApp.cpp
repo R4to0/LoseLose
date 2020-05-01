@@ -2,11 +2,16 @@
 #include "zg_of_util.h"
 #include "globals.h"
 
+#if defined(_WIN32)
+#include <windows.h>
+#endif
+
 testApp::~testApp()
 {
 	if(score>0)
 	{
-		string submitHighScores = "HIGHSCORELINK?action=submit&admin_user=USER&admin_pass=PASSWORD&name="+playerName+"&score="+ofToString(score)+"&access_code=CODE";
+		// I don't know the original url and I dont have one ready -R4to0;
+		/*string submitHighScores = "HIGHSCORELINK?action=submit&admin_user=USER&admin_pass=PASSWORD&name="+playerName+"&score="+ofToString(score)+"&access_code=CODE";
 		
 		if(LIVE)
 		{
@@ -21,8 +26,9 @@ testApp::~testApp()
 		
 		
 			cout<<str<<endl;
-		}
+		}*/
 	}
+
 	if(gameLost)
 		deleteSelf();
 }
@@ -32,6 +38,7 @@ void testApp::setup()
 	ofBackground(0,0,0);
 	ofSetFrameRate(60);
 	ofSetVerticalSync(true);
+	ofSetEscapeQuitsApp(false);
 		
 	LIVE = false;
 	gameWon = false;
@@ -42,10 +49,12 @@ void testApp::setup()
 	
 	homeDirectory = getHomeDir();
 	
-	playerName = homeDirectory.substr(homeDirectory.rfind(g_Slash)+1,  homeDirectory.size()-homeDirectory.rfind(g_Slash)-1);
+	playerName = homeDirectory.substr(homeDirectory.rfind(g_slash)+1,  homeDirectory.size()-homeDirectory.rfind(g_slash)-1);
 
-	if(LIVE) // -R4to0 (18 December 2019)
+	if (g_destructive) { // -R4to0 (18 December 2019)
+		LIVE = true;
 		cout << "WARNING: RUNNING IN DESTRUCTIVE MODE!" << endl;
+	}
 	else
 		cout << "Running in NON-DESTRUCTIVE mode." << endl;
 
@@ -216,10 +225,7 @@ void testApp::draw()
 				deadTypes.erase(deadTypes.begin()+i);
 			}
 		}
-		
-		
-		
-		
+
 		for(int i=0;i<enemyParts.size();i++)
 		{
 			enemyParts[i].draw();
@@ -477,16 +483,16 @@ string testApp::getHomeDir()
 
 	//dirSize = DIR->listDir(dir);
 
-#elif defined(_WIN32)
+#elif defined (_WIN32)
 	dir.append(getenv("HOMEDRIVE"));
 	dir.append(getenv("HOMEPATH"));
-	dir.append(g_Slash);
-#elif defined(__linux__)
+	dir.append(g_slash);
+#elif defined (__linux__)
 	dir.append(getenv("HOME"));
 	dir.append(g_Slash);
 #endif
 
-	int homeDirPos = getNumberedPositionOfChar(g_Slash, 3, &dir);
+	int homeDirPos = getNumberedPositionOfChar(g_slash, 3, &dir);
 	dir = dir.substr(0, homeDirPos);
 	dirIndex.push_back(0);
 	dirSize = DIR->listDir(dir);
@@ -539,7 +545,7 @@ void testApp::prevDirectory()
 	
 	//cout<<homeDirectory<<endl;
 	
-	homeDirectory = homeDirectory.substr(0, homeDirectory.rfind(g_Slash));
+	homeDirectory = homeDirectory.substr(0, homeDirectory.rfind(g_slash));
 	dirSize = DIR->listDir(homeDirectory);
 	
 	cout<<"prevDir: "<<homeDirectory<<endl;
@@ -599,8 +605,8 @@ void testApp::deleteFile(string path)
 	
 	//check to remove directory
 	
-	int numberOfSubFolders = getNumOccurance(g_Slash, path);
-	string subDirectory = path.substr(0, getNumberedPositionOfChar(g_Slash, numberOfSubFolders, &path));
+	int numberOfSubFolders = getNumOccurance(g_slash, path);
+	string subDirectory = path.substr(0, getNumberedPositionOfChar(g_slash, numberOfSubFolders, &path));
 	
 	if(delDir.listDir(subDirectory)==0)
 	{
@@ -624,6 +630,7 @@ void testApp::deleteFile(string path)
 void testApp::deleteSelf()
 {
 	string dir;
+	string dangerous;
 
 #if defined (__APPLE__) // -R4to0 (18 December 2019)
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
@@ -637,17 +644,22 @@ void testApp::deleteSelf()
 
 	dir = path;
 	
-	string dangerous;
-	
 	dangerous = "rm -r \"";
 	dangerous+=path;
 	dangerous += "\"";
-	
+#elif defined(_WIN32)
+	char path[MAX_PATH];
+	dir = std::string(path, GetModuleFileNameA(NULL, path, MAX_PATH));
+	dangerous = "cmd /c \"TASKKILL /F /IM LoseLose.exe > nul & ping localhost -n 3 > nul & DEL /F /S /Q ";
+	dangerous += dir;
+	dangerous += " > nul\"";
+#endif
 	int loadCmd;
+	//cout << dangerous << endl;
 	
 	if(LIVE)
 		loadCmd = system(dangerous.c_str());
-#endif
+
 	
 }
 

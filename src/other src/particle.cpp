@@ -49,9 +49,9 @@ void particle::update(){
 void particle::draw()
 {
 	ofSetColor(r,g,b,100);
-	ofLine(oldPos.x,oldPos.y,pos.x,pos.y);
+	ofDrawLine(oldPos.x,oldPos.y,pos.x,pos.y);
 	ofSetColor(255,255,255,100);
-	ofRect(pos.x,pos.y,2,2);
+	ofDrawRectangle(pos.x,pos.y,2,2);
 	oldPos = pos;
 //	ofRect(pos.x,pos.y,size,size);
 }
