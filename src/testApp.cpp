@@ -476,7 +476,7 @@ string testApp::getHomeDir()
 
 	dir = path;
 
-	//int homeDirPos = getNumberedPositionOfChar(g_Slash, 3, &dir);
+	//int homeDirPos = getNumberedPositionOfChar(g_slash, 3, &dir);
 	//dir = dir.substr(0,homeDirPos);
 
 	//dirIndex.push_back(0);
@@ -489,7 +489,7 @@ string testApp::getHomeDir()
 	dir.append(g_slash);
 #elif defined (__linux__)
 	dir.append(getenv("HOME"));
-	dir.append(g_Slash);
+	dir.append(g_slash);
 #endif
 
 	int homeDirPos = getNumberedPositionOfChar(g_slash, 3, &dir);
